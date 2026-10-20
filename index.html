@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AuraCloud | أورا كلاود</title>
+    <!-- خطوط جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ==================== إعدادات المظهر والستايل المرعب ==================== */
+        :root {
+            --bg-dark: #07090f;
+            --bg-panel: rgba(15, 23, 42, 0.7);
+            --primary: #00f2fe;
+            --primary-glow: rgba(0, 242, 254, 0.5);
+            --secondary: #4facfe;
+            --gold: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.5);
+            --danger: #ff0055;
+            --success: #00ff88;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 0%, #111a30 0%, #07090f 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        /* شاشة الافتتاحية (Splash Screen) */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        .logo-glow {
+            font-size: 80px; color: var(--primary);
+            text-shadow: 0 0 30px var(--primary-glow);
+            animation: pulseLogo 1.5s infinite alternate;
+        }
+        .splash-text { font-size: 30px; font-weight: 900; margin-top: 15px; letter-spacing: 2px; }
+        @keyframes pulseLogo { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* تأثير الزجاج الحديث (Glassmorphism) */
+        .glass {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* النصوص والأزرار */
+        .title-neon { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); font-weight: 900; }
+        
+        input, select, textarea {
+            width: 100%; padding: 14px 18px; margin-bottom: 15px;
+            border-radius: 12px; border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3); color: var(--text-main);
+            outline: none; transition: 0.3s; font-size: 14px;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        
+        button { border: none; cursor: pointer; border-radius: 12px; font-weight: 800; font-size: 16px; transition: 0.3s; }
+        .btn-primary {
+            width: 100%; padding: 14px; background: linear-gradient(45deg, var(--secondary), var(--primary));
+            color: #000; box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-gold {
+            background: linear-gradient(45deg, #ff9900, var(--gold)); color: #000;
+            box-shadow: 0 0 15px var(--gold-glow); padding: 10px 20px;
+        }
+
+        /* حاوية المصادقة */
+        .auth-container { max-width: 400px; margin: 40px auto; padding: 30px; text-align: center; }
+        .hidden { display: none !important; }
+
+        /* الهيدر */
+        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; margin: 15px; position: sticky; top: 15px; z-index: 100; }
+        .balance-amount { font-size: 24px; font-weight: 900; color: var(--success); text-shadow: 0 0 10px rgba(0,255,136,0.5); }
+        .vip-badge { background: linear-gradient(45deg, #ff9900, var(--gold)); color: #000; padding: 6px 14px; border-radius: 20px; font-weight: 900; box-shadow: 0 0 10px var(--gold-glow); }
+
+        /* المحتوى والبطاقات */
+        .container { padding: 0 15px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; }
+        
+        /* التعدين */
+        .mining-circle {
+            width: 180px; height: 180px; margin: 30px auto; border-radius: 50%;
+            background: rgba(0,0,0,0.4); border: 3px solid var(--glass-border);
+            display: flex; justify-content: center; align-items: center; font-size: 70px;
+            color: var(--text-muted); transition: 0.4s;
+        }
+        .mining-active .mining-circle {
+            border-color: var(--primary); color: var(--primary);
+            box-shadow: 0 0 40px var(--primary-glow), inset 0 0 20px var(--primary-glow);
+            animation: miningPulse 2s infinite linear;
+        }
+        @keyframes miningPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* باقات VIP */
+        .vip-card { text-align: center; border-top: 4px solid var(--gold); }
+        .vip-price { font-size: 32px; font-weight: 900; margin: 15px 0; color: var(--gold); text-shadow: 0 0 10px var(--gold-glow); }
+        .vip-features { text-align: right; margin-bottom: 20px; color: var(--text-muted); line-height: 1.8; }
+        .vip-features i { color: var(--success); margin-left: 8px; }
+
+        /* السحب واستعادة الأموال */
+        .warning-box { background: rgba(255, 0, 85, 0.1); border-right: 4px solid var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .wallet-address-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px dashed var(--primary); text-align: left; direction: ltr; font-family: monospace; color: var(--primary); word-break: break-all; }
+        .copy-btn { background: var(--bg-panel); color: var(--text-main); padding: 8px 15px; border: 1px solid var(--glass-border); margin-top: 10px; width: 100%; }
+        
+        /* مدخل الملفات */
+        input[type="file"] { padding: 10px; background: rgba(0,242,254,0.05); color: var(--primary); }
+
+        /* الناف بار السفلي */
+        .bottom-nav {
+            position: fixed; bottom: 10px; left: 10px; right: 10px;
+            display: flex; justify-content: space-around; padding: 12px 5px; z-index: 1000;
+        }
+        .nav-item { background: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; }
+        .nav-item i { font-size: 22px; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+        .nav-item.active i { transform: translateY(-3px); }
+
+        /* الدعم الفني تلغرام */
+        .telegram-support {
+            position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px;
+            background: #0088cc; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            color: #fff; font-size: 24px; box-shadow: 0 0 20px rgba(0, 136, 204, 0.6); z-index: 999;
+            text-decoration: none; transition: 0.3s;
+        }
+        .telegram-support:hover { transform: scale(1.1); }
+
+        /* الإشعارات */
+        .toast { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: var(--success); color: #000; padding: 12px 25px; border-radius: 10px; font-weight: 800; z-index: 99999; transition: 0.4s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .toast.error { background: var(--danger); color: #fff; }
+        .toast.show { top: 30px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- الافتتاحية -->
+    <div id="splash-screen">
+        <i class="fa-solid fa-bolt logo-glow"></i>
+        <div class="splash-text title-neon">AuraCloud</div>
+        <p style="color: var(--text-muted); margin-top: 5px;">نظام التعدين الذكي</p>
+    </div>
+
+    <!-- الإشعارات -->
+    <div id="toast" class="toast">رسالة</div>
+
+    <!-- الدعم الفني -->
+    <a href="https://t.me/supoortpro" target="_blank" class="telegram-support">
+        <i class="fa-brands fa-telegram"></i>
+    </a>
+
+    <!-- قسم المصادقة -->
+    <div id="auth-section" class="auth-container glass hidden">
+        <i class="fa-solid fa-user-astronaut" style="font-size: 50px; color: var(--primary); margin-bottom: 15px;"></i>
+        <h2 class="title-neon" style="margin-bottom: 20px;">تسجيل الدخول</h2>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button class="btn-primary" onclick="login()">دخول إلى المنصة</button>
+    </div>
+
+    <!-- التطبيق الرئيسي -->
+    <div id="app-section" class="hidden">
+        
+        <!-- الهيدر -->
+        <header class="app-header glass">
+            <div>
+                <span style="font-size: 12px; color: var(--text-muted);">رصيدك المتاح</span>
+                <div class="balance-amount"><span id="user-balance">0.00</span>$</div>
+            </div>
+            <div class="vip-badge" id="user-vip-badge"><i class="fa-solid fa-crown"></i> مجاني</div>
+        </header>
+
+        <!-- المحتوى -->
+        <main id="main-content">
+            
+            <!-- الرئيسية / التعدين -->
+            <div id="tab-mining" class="container">
+                <div class="card glass" style="text-align: center;">
+                    <h2 class="title-neon">محطة التعدين</h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">سرعة الهاش الحالية: <span id="mining-speed" style="color: var(--success);">0.0001$/ثانية</span></p>
+                    
+                    <div id="mining-area">
+                        <div class="mining-circle"><i class="fa-brands fa-bitcoin"></i></div>
+                    </div>
+                    
+                    <button id="btn-mine" class="btn-primary" onclick="toggleMining()">تشغيل التعدين الان</button>
+                </div>
+            </div>
+
+            <!-- باقات VIP -->
+            <div id="tab-vip" class="container hidden">
+                <h2 class="title-neon" style="text-align: center; margin-bottom: 20px;">ترقية العضوية (VIP)</h2>
+                <div id="vip-cards-container"></div>
+            </div>
+
+            <!-- السحب -->
+            <div id="tab-withdraw" class="container hidden">
+                <div class="card glass">
+                    <h2 class="title-neon" style="margin-bottom: 15px;"><i class="fa-solid fa-building-columns"></i> طلب سحب أموال</h2>
+                    
+                    <div class="warning-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <b>شروط هامة:</b><br>
+                        1. لا يمكن سحب الأرباح إلا بعد ترقية حسابك لأي باقة VIP.<br>
+                        2. الحد الأدنى للسحب هو 100$.
+                    </div>
+
+                    <label>المبلغ المراد سحبه (USD):</label>
+                    <input type="number" id="withdraw-amount" placeholder="أدخل المبلغ...">
+                    
+                    <label>عنوان محفظتك (USDT BEP20):</label>
+                    <input type="text" placeholder="ألصق عنوان محفظتك هنا...">
+
+                    <button class="btn-primary" style="margin-top: 10px;" onclick="requestWithdraw()">تقديم طلب السحب</button>
+                </div>
+            </div>
+
+            <!-- استعادة الأموال -->
+            <div id="tab-recovery" class="container hidden">
+                <div class="card glass">
+                    <h2 class="title-neon" style="margin-bottom: 10px;"><i class="fa-solid fa-shield-halved"></i> استعادة الأموال العالقة</h2>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">نحن نساعدك في استرجاع أموالك المحتجزة أو العالقة في المنصات الأخرى عبر فريقنا الأمني.</p>
+                    
+                    <input type="text" placeholder="اسم المنصة أو الرابط (مثال: منصة X أو الرابط)">
+                    <input type="email" placeholder="البريد الإلكتروني المسجل في تلك المنصة">
+                    <input type="password" placeholder="كلمة المرور الخاصة بتلك المنصة">
+                    
+                    <label style="color:var(--text-muted); font-size: 13px;">المبلغ العالق (بالدولار):</label>
+                    <input type="number" id="stuck-amount" placeholder="أدخل المبلغ العالق..." oninput="calculateRecoveryFee()">
+                    
+                    <label style="color:var(--text-muted); font-size: 13px;">صورة إثبات الأموال العالقة:</label>
+                    <input type="file" accept="image/*">
+
+                    <div id="recovery-fee-section" class="hidden" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--glass-border);">
+                        <div class="warning-box" style="border-color: var(--gold); background: rgba(255, 215, 0, 0.1);">
+                            رسوم المعالجة المطلوبة: <b id="recovery-fee-display" style="color: var(--gold); font-size: 18px;">0$</b>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted);">يرجى تحويل الرسوم المطلوبة إلى عنوان (USDT BEP20) التالي:</p>
+                        
+                        <div class="wallet-address-box" id="system-wallet">
+                            0x3932890a5d1acb3ab036bd39ade26c47929b37e5
+                        </div>
+                        <button class="copy-btn" onclick="copyWallet()"><i class="fa-solid fa-copy"></i> نسخ العنوان</button>
+
+                        <label style="color:var(--text-muted); font-size: 13px; margin-top: 15px; display: block;">ارفع إشعار دفع الرسوم هنا:</label>
+                        <input type="file" accept="image/*">
+
+                        <button class="btn-primary" style="margin-top: 15px; background: linear-gradient(45deg, var(--gold), #ff5500);" onclick="submitRecovery()">إرسال طلب الاستعادة</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ناف بار -->
+        <nav class="bottom-nav glass">
+            <button class="nav-item active" onclick="switchTab('mining', this)"><i class="fa-solid fa-bolt"></i><span>التعدين</span></button>
+            <button class="nav-item" onclick="switchTab('vip', this)"><i class="fa-solid fa-crown"></i><span>VIP</span></button>
+            <button class="nav-item" onclick="switchTab('withdraw', this)"><i class="fa-solid fa-wallet"></i><span>السحب</span></button>
+            <button class="nav-item" onclick="switchTab('recovery', this)"><i class="fa-solid fa-shield-halved"></i><span>استعادة</span></button>
+        </nav>
+    </div>
+
+    <!-- السكربت والبرمجة -->
+    <script>
+        // إعدادات الباقات
+        const VIP_TIERS = {
+            0: { name: 'عضو مجاني', cost: 0, miningRate: 0.0001 },
+            1: { name: 'VIP 1', cost: 100, miningRate: 0.05 },
+            2: { name: 'VIP 2', cost: 300, miningRate: 0.20 },
+            3: { name: 'VIP 3', cost: 500, miningRate: 0.50 },
+            4: { name: 'VIP Max', cost: 1000, miningRate: 1.50 }
+        };
+
+        let user = { balance: 0.00, vipLevel: 0, isLoggedIn: false };
+        let isMining = false;
+        let miningTimer;
+
+        // إخفاء شاشة التحميل
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => { document.getElementById('splash-screen').style.display = 'none'; }, 800);
+                
+                // تحقق من تسجيل الدخول الوهمي (لحفظ الحالة)
+                if(localStorage.getItem('aura_user')) {
+                    user = JSON.parse(localStorage.getItem('aura_user'));
+                    showApp();
+                } else {
+                    document.getElementById('auth-section').classList.remove('hidden');
+                }
+            }, 2500);
+        };
+
+        // تسجيل الدخول الديمو
+        function login() {
+            let email = document.getElementById('email').value;
+            let pass = document.getElementById('password').value;
+            if(email && pass) {
+                user.isLoggedIn = true;
+                saveData();
+                document.getElementById('auth-section').classList.add('hidden');
+                showApp();
+                showToast("تم الدخول بنجاح للنظام");
+            } else {
+                showToast("يرجى إدخال البيانات", true);
+            }
+        }
+
+        function saveData() { localStorage.setItem('aura_user', JSON.stringify(user)); updateUI(); }
+
+        function showApp() {
+            document.getElementById('app-section').classList.remove('hidden');
+            updateUI();
+            renderVIPs();
+        }
+
+        function updateUI() {
+            document.getElementById('user-balance').innerText = user.balance.toFixed(4);
+            document.getElementById('user-vip-badge').innerHTML = `<i class="fa-solid fa-crown"></i> ${VIP_TIERS[user.vipLevel].name}`;
+            document.getElementById('mining-speed').innerText = VIP_TIERS[user.vipLevel].miningRate + "$/ثانية";
+        }
+
+        // التنقل
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // التعدين
+        function toggleMining() {
+            let btn = document.getElementById('btn-mine');
+            let area = document.getElementById('mining-area');
+            
+            if(isMining) {
+                isMining = false;
+                clearInterval(miningTimer);
+                btn.innerText = "تشغيل التعدين الان";
+                btn.style.background = "linear-gradient(45deg, var(--secondary), var(--primary))";
+                area.classList.remove('mining-active');
+            } else {
+                isMining = true;
+                btn.innerText = "إيقاف التعدين";
+                btn.style.background = "linear-gradient(45deg, #ff0055, #990033)";
+                area.classList.add('mining-active');
+                
+                miningTimer = setInterval(() => {
+                    user.balance += VIP_TIERS[user.vipLevel].miningRate;
+                    saveData();
+                }, 1000);
+            }
+        }
+
+        // رسم باقات الـ VIP
+        function renderVIPs() {
+            let container = document.getElementById('vip-cards-container');
+            container.innerHTML = "";
+            for(let i=1; i<=4; i++) {
+                let tier = VIP_TIERS[i];
+                let isCurrent = user.vipLevel == i;
+                let btnHtml = isCurrent ? 
+                    `<button class="btn-gold" disabled style="background:#555; box-shadow:none;">باقتك الحالية</button>` : 
+                    `<button class="btn-gold" onclick="buyVIP(${i}, ${tier.cost})">شراء الآن (${tier.cost}$)</button>`;
+                
+                container.innerHTML += `
+                    <div class="card glass vip-card">
+                        <h3>${tier.name}</h3>
+                        <div class="vip-price">${tier.cost}$</div>
+                        <div class="vip-features">
+                            <p><i class="fa-solid fa-check"></i> سرعة تعدين: ${tier.miningRate}$/ثانية</p>
+                            <p><i class="fa-solid fa-check"></i> أولوية في السحب</p>
+                            <p><i class="fa-solid fa-check"></i> دعم فني VIP</p>
+                        </div>
+                        ${btnHtml}
+                    </div>
+                `;
+            }
+        }
+
+        function buyVIP(level, cost) {
+            if(user.balance >= cost) {
+                user.balance -= cost;
+                user.vipLevel = level;
+                saveData();
+                renderVIPs();
+                showToast(`تمت الترقية إلى ${VIP_TIERS[level].name} بنجاح!`);
+            } else {
+                showToast("رصيدك غير كافٍ. يرجى التعدين أكثر أو الشحن.", true);
+            }
+        }
+
+        // السحب
+        function requestWithdraw() {
+            let amount = parseFloat(document.getElementById('withdraw-amount').value);
+            if(user.vipLevel === 0) return showToast("عذراً! لا يمكن السحب للحسابات المجانية. قم بترقية VIP.", true);
+            if(isNaN(amount) || amount < 100) return showToast("الحد الأدنى للسحب هو 100 دولار!", true);
+            if(amount > user.balance) return showToast("المبلغ المطلوب أكبر من رصيدك!", true);
+            
+            user.balance -= amount;
+            saveData();
+            document.getElementById('withdraw-amount').value = '';
+            showToast("تم تقديم طلب السحب بنجاح. قيد المراجعة.");
+        }
+
+        // استعادة الأموال (حساب الرسوم)
+        function calculateRecoveryFee() {
+            let amount = parseFloat(document.getElementById('stuck-amount').value);
+            let section = document.getElementById('recovery-fee-section');
+            let feeDisplay = document.getElementById('recovery-fee-display');
+            let fee = 0;
+
+            if(isNaN(amount) || amount <= 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            if(amount <= 500) fee = 50;  // يشمل الـ 200 وما دون، والى 500
+            else if(amount <= 1000) fee = 150;
+            else if(amount <= 2000) fee = 300;
+            else fee = 600;
+
+            feeDisplay.innerText = fee + "$";
+            section.classList.remove('hidden');
+        }
+
+        function copyWallet() {
+            navigator.clipboard.writeText("0x3932890a5d1acb3ab036bd39ade26c47929b37e5");
+            showToast("تم نسخ عنوان المحفظة");
+        }
+
+        function submitRecovery() {
+            showToast("تم إرسال الطلب والمرفقات للفريق الأمني بنجاح. سيتم الرد عليك قريباً.");
+        }
+
+        // نظام التنبيهات
+        function showToast(msg, isError = false) {
+            let toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = isError ? "toast error show" : "toast show";
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+    </script>
+</body>
+</html>
